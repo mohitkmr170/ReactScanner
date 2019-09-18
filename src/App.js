@@ -20,28 +20,32 @@ class App extends React.Component {
     this.state = {
       data: "No data found!",
       scannerReady: false,
-      enableTorchToggle: true
+      enableTorchToggle: true,
+      paused: false
     };
   }
   getScanSettings = () => {
-    return new ScanSettings({
-      enabledSymbologies: [
-        "ean8",
-        "ean13",
-        "upca",
-        "upce",
-        "code128",
-        "code39",
-        "code93",
-        "itf",
-        "dotcode",
+    let scanObj = new ScanSettings();
+    scanObj.setMultipleSymbologiesEnabled(
+      [
         Barcode.Symbology.DOTCODE,
         Barcode.Symbology.CODE128,
-        "data-matrix"
+        Barcode.Symbology.CODABAR,
+        Barcode.Symbology.CODE11,
+        Barcode.Symbology.CODE25,
+        Barcode.Symbology.CODE32,
+        Barcode.Symbology.CODE32,
+        Barcode.Symbology.CODE39,
+        Barcode.Symbology.CODE93,
+        Barcode.Symbology.EAN13,
+        Barcode.Symbology.EAN8
       ],
-      codeDuplicateFilter: 1000,
-      blurryRecognition: true
-    });
+      true
+    );
+    scanObj
+      .getSymbologySettings(Barcode.Symbology.DOTCODE)
+      .setColorInvertedEnabled(true);
+    return scanObj;
   };
 
   handleOnScan = res => {
@@ -50,8 +54,8 @@ class App extends React.Component {
     else this.setState({ data: "No data found!" });
   };
 
-  handleScanError = err => {
-    console.log(err);
+  handleProcessFrame = proc => {
+    console.log("process", proc);
   };
 
   render() {
@@ -65,13 +69,14 @@ class App extends React.Component {
               this.setState({ scannerReady: true, data: "No data found!" })
             } // Picker events
             onScan={res => this.handleOnScan(res)}
-            onScanError={err => this.handleScanError(err)}
-            // onSubmitFrame={sub => console.log("sub", sub)}
-            // onProcessFrame={proc => console.log("process", proc)}
-            // enableTorchToggle={this.state.enableTorchToggle}
+            onScanError={err => console.log("error", err)}
+            // onProcessFrame={proc => this.handleProcessFrame(proc)}
             scanSettings={this.getScanSettings()} // Picker options(Tab/QR/DotCode)
             singleImageMod={true}
             enableTapToFocus={true}
+            playSoundOnScan={true}
+            paused={this.state.paused}
+            visible={true}
           />
           <div>{this.state.data}</div>
         </div>
