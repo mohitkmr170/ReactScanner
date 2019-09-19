@@ -17,7 +17,8 @@ class DotScanner extends React.Component {
     this.state = {
       data: "No data found!",
       scannerReady: false,
-      open: false
+      open: false,
+      paused: false
     };
   }
 
@@ -51,10 +52,11 @@ class DotScanner extends React.Component {
       });
     } else {
       timeOut++;
-      if (timeOut === 50) {
+      if (timeOut === 70) {
         this.setState({
           open: true,
-          data: errorCode
+          data: errorCode,
+          paused: true
         });
       }
     }
@@ -63,7 +65,8 @@ class DotScanner extends React.Component {
   handleClose = () => {
     timeOut = 0;
     this.setState({
-      data: "Scanning..."
+      data: "Scanning...",
+      paused: false
     });
   };
 
@@ -83,7 +86,7 @@ class DotScanner extends React.Component {
           singleImageMod={true}
           enableTapToFocus={true}
           playSoundOnScan={true}
-          paused={false}
+          paused={this.state.paused}
           visible={true}
           enableTorchToggle={true}
         />
